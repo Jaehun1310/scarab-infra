@@ -31,6 +31,20 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y gcc-15 g++-15 gfortran-15
 
+# Runtime deps for running prebuilt SPEC2026 binaries. SPEC CPU2026 is licensed
+# and stays outside the image; scarab-infra mounts descriptor.application_dir at
+# /tmp_home/application when tracing.
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        libcrypt1 \
+        libgfortran5 \
+        libgomp1 \
+        libquadmath0 \
+        libstdc++6 \
+        numactl \
+        perl \
+        procps \
+        time
+
 WORKDIR $tmpdir
 
 RUN mkdir -p $tmpdir/application/
