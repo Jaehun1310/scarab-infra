@@ -4,13 +4,13 @@
   "_architecture":"A name of the available architectures (PARAMS.<architecture>) found in scarab repository, which defines the machine parameters of the default configuration.",
   "architecture":"golden_cove",
   "_experiment":"The name of the experiment. scarab-infra will create a new folder named containing all files needed to execute the simulation in the <ROOT_DIR>/simulations/<experiment> directory. The folder will also contain all generated simulation statistics/outputs.",
-  "experiment":"exp",
+  "experiment":"SPEC2026_Branch_Profiling_RE",
   "_workload_manager":"manual: run each exp scenario with all the simpoints at a time, slurm: Slurm schedules simulations based on its policy",
   "workload_manager":"manual",
   "_root_dir":"Root directory mounted into the docker container home, for instance, the user's home directory",
   "root_dir":"/home/jaehun/2_simulator/scarab_main",
   "_application_dir":"The path to the benchmark application directory used for tracing or simulation. This directory replaces ISO-based setups by mounting a local application folder (e.g., SPEC CPU2017) into the container during image build or runtime.",
-  "application_dir":"/home/jaehun/1_benchmarks",
+  "application_dir":"/home/jaehun/1_workloads/applications",
   "_scarab_path":"The path to the scarab repository that contains the scarab binary used to run the experiment.",
   "scarab_path":"/home/jaehun/2_simulator/scarab_main/scarab",
   "_scarab_build":"scarab build mode. 'opt', 'opt-avx' (-march=skylake-avx512), 'dbg', or null. Values must match Scarab src/Makefile targets.",
@@ -19,34 +19,53 @@
   "traces_dir":"/home/jaehun/1_workloads/traces",
   "_top_simpoint":"Run only top 3 simpoints stored in 'workloads_top_simp.json' instead of the entire simpoints in 'workloads_db.json'",
   "top_simpoint":true,
-  "_simulations":"A list of [suite, subsuite, workload, simpoint's cluster #, simulation type, warmup]. Available suite, subsuite, workloads, and each workload's available cluster_id and simulation_type are found in workloads/workloads_db.json. It runs all the simpoints if cluster_id is null and simulation type is one of 'exec', 'memtrace', 'pt'. When only 'suite' or 'suite'+'subsuite' is given and the rest are null, it launches simulations for all the workloads, all the simpoints if available, and in prioritized_mode (simulation type) in workloads/workloads_db.json. warmup can be null or smaller than the warmup of the trace available in workloads/workloads_db.json. The 'workload' field can also be a list of strings (e.g. ['gcc_r', 'mcf_r']) to run multiple specific workloads in a single entry, or an empty list [] to run all workloads (same as null).",
-  "simulations":[
-    {
-      "suite":"spec2017",
-      "subsuite":"rate_int_v2",
-      "workload":null,
-      "cluster_id":null,
-      "simulation_type":null,
-      "warmup":null
-    },
-    {
+  "_disabled_trace_configurations": "JSON은 주석을 지원하지 않아서 시뮬레이션을 하지 않을 trace를 이 필드에 보관한다.",
+  "disabled_trace_configurations": [
+     {
       "suite":"spec2026",
       "subsuite":"rate_int",
       "workload":[
-        "abc_r_1",
+        
         "cppcheck_r_1",
         "cpython_r_1",
-        "gcc_r_1",
+        
         "gem5_r_1",
-        "llvm_r_1",
+        
         "ns3_r_1",
         "ntest_r",
         "omnetpp_r_1",
-        "sealcrypto_r",
+        
         "sqlite_r_1",
         "stockfish_r_1",
-        "vpr_r_1",
-        "zstd_r_1"
+
+        "abc_r_1", "gcc_r_1", "llvm_r_1", "sealcrypto_r", "vpr_r_1", "zstd_r_1"
+        
+      ],
+      "cluster_id":null,
+      "simulation_type":"memtrace",
+      "warmup":null
+    }
+  ],
+  "_simulations":"A list of [suite, subsuite, workload, simpoint's cluster #, simulation type, warmup]. Available suite, subsuite, workloads, and each workload's available cluster_id and simulation_type are found in workloads/workloads_db.json. It runs all the simpoints if cluster_id is null and simulation type is one of 'exec', 'memtrace', 'pt'. When only 'suite' or 'suite'+'subsuite' is given and the rest are null, it launches simulations for all the workloads, all the simpoints if available, and in prioritized_mode (simulation type) in workloads/workloads_db.json. warmup can be null or smaller than the warmup of the trace available in workloads/workloads_db.json. The 'workload' field can also be a list of strings (e.g. ['gcc_r', 'mcf_r']) to run multiple specific workloads in a single entry, or an empty list [] to run all workloads (same as null).",
+  "simulations":[
+    {
+      "suite":"spec2026",
+      "subsuite":"rate_fp",
+      "workload":[
+
+        "astcenc_r_1",
+        "cactus_r",
+        "femflow_r",
+        "flightdm_r_1",
+        "fotonik3d_r",
+        "gmsh_r_1",
+        "lbm_r",
+        "marian_r_1",
+        "nest_r_1",
+        "ocio_r_1",
+        "palm_r",
+        "roms_r"
+
       ],
       "cluster_id":null,
       "simulation_type":"memtrace",
@@ -55,14 +74,56 @@
   ],
   "_configurations":"scarab configurations to sweep. slurm_options passes extra arguments to sbatch (ignored for manual runner); '--mem' is no longer needed here as memory is scheduled per-simpoint automatically. memory_overhead_mb (optional, default 0) adds a fixed MB overhead on top of the per-simpoint base memory for configs that allocate extra Scarab structures. Options: https://slurm.schedmd.com/sbatch.html",
   "configurations":{
-    "icache_32k":{
-      "params":"--icache_size 32768",
+    "Bimodal":{
+      "params":"--bp_mech bimodal --spec_level 0",
       "binary":"scarab_current",
       "slurm_options":"",
       "memory_overhead_mb":0
     },
-    "icache_64k":{
-      "params":"--icache_size 65536",
+    "GShare":{
+      "params":"--bp_mech gshare --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "Hybrid_GP":{
+      "params":"--bp_mech hybridgp --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "TAGE_SC_L_64K":{
+      "params":"--bp_mech tagescl --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "TAGE_SC_L_64K_CBP":{
+      "params":"--bp_mech tage64k --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "TAGE_SC_64K_CBP":{
+      "params":"--bp_mech tage64k --tagescl64kb_loop 0 --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "TAGE_L_64K_CBP":{
+      "params":"--bp_mech tage64k --tagescl64kb_sc 0 --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "TAGE_64K_CBP":{
+      "params":"--bp_mech tage64k --tagescl64kb_loop 0 --tagescl64kb_sc 0 --spec_level 0",
+      "binary":"scarab_current",
+      "slurm_options":"",
+      "memory_overhead_mb":0
+    },
+    "MTAGE":{
+      "params":"--bp_mech mtage --spec_level 0",
       "binary":"scarab_current",
       "slurm_options":"",
       "memory_overhead_mb":0
@@ -74,25 +135,41 @@
   },
   "_visualize":"Visualization settings for ./sci --visualize. Configure baseline and counters.",
   "visualize":{
-    "baseline":"icache_32k",
+    "baseline":"Bimodal",
     "configs":[
-      "icache_64k"
+      "GShare",
+      "Hybrid_GP",
+      "TAGE_SC_L_64K",
+      "TAGE_SC_L_64K_CBP",
+      "TAGE_SC_64K_CBP",
+      "TAGE_L_64K_CBP",
+      "TAGE_64K_CBP",
+      "MTAGE"
     ],
     "counters":[
       "IPC",
+      "NODE_INST_COUNT",
+      "ST_CF_CBR_count",
       [
-        "BTB_CORRECT",
-        "BTB_INCORRECT_BUT_TARGET_CORRECT",
-        "BTB_INCORRECT"
+        "MAIN_CBR_RECOVER_AT_EXEC_count",
+        "MAIN_CBR_RECOVER_BTB_MISS_T_NT_count",
+        "MAIN_CBR_RECOVER_BTB_MISS_NT_T_count"
       ],
       {
         "type":"stacked",
-        "name":"icache_hit_miss",
-        "title":"Icache Hit/Miss Breakdown",
+        "name":"branch_type_breakdown",
+        "title":"Control-Flow Instruction Breakdown",
         "y_label":"Events",
         "stats":[
-          "ICACHE_HIT",
-          "ICACHE_MISS"
+          "ST_CF_BR_count",
+          "ST_CF_CBR_count",
+          "ST_CF_REP_count",
+          "ST_CF_CALL_count",
+          "ST_CF_IBR_count",
+          "ST_CF_ICALL_count",
+          "ST_CF_ICO_count",
+          "ST_CF_RET_count",
+          "ST_CF_SYS_count"
         ]
       }
     ]
@@ -104,7 +181,7 @@
   },
   "_perf_analyze":"Performance drift analysis settings for ./sci --perf-analyze. It diffs stats and also compares baseline-vs-target Scarab binary hashes; when hashes differ it runs git diff/log in scarab_path and includes that context in reports and AI prompt. analyzer_cli_cmd examples: codex (auto-runs as non-interactive codex exec -), codex exec -, gemini -p \"@{prompt_file}\", or claude (auto-runs as non-interactive claude -p via stdin). Supported placeholders: {prompt_file}, {summary_file}, {report_file}.",
   "perf_analyze":{
-    "baseline":"icache_32k",
+    "baseline":"TAGE",
     "counters":[
       "IPC",
       "ICACHE_MISS"
