@@ -2,6 +2,7 @@
 #include "drmgr.h"
 #include "drutil.h"
 #include "droption.h"
+#include <new>
 #include <vector>
 #include <map>
 #include <string>
@@ -239,8 +240,8 @@ static void
 event_thread_init(void *drcontext)
 {
     /* create an instance of our data structure for this thread */
-    per_thread_data *t_data = (per_thread_data *)dr_thread_alloc(drcontext, sizeof(per_thread_data));
-    *t_data = {};
+    void *t_mem = dr_thread_alloc(drcontext, sizeof(per_thread_data));
+    per_thread_data *t_data = new (t_mem) per_thread_data();
     t_data->clear();
     t_data->thread_id = dr_get_thread_id(drcontext);
     dr_printf("[%llu] new thread\n", t_data->thread_id);
@@ -375,6 +376,7 @@ event_thread_exit(void *drcontext)
     }
     dr_printf("total unique instrs: %llu\n", (unsigned long long)unique_instrs_count);
 
+    t_data->~per_thread_data();
     dr_thread_free(drcontext, t_data, sizeof(per_thread_data));
 
     dr_printf("[-] exited\n");
